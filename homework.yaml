@@ -1,0 +1,57 @@
+---
+- name: Netology MLOps Homework Playbook
+  hosts: netology_ml
+  become: yes
+  vars:
+    packages:
+      - net-tools
+      - git
+      - tree
+      - htop
+      - mc
+      - vim
+    users:
+      - name: devops_1
+        group: devops_1
+        home: /home/devops_1
+      - name: test_1  
+        group: test_1
+        home: /home/test_1
+
+  tasks:
+    - name: Test connection to hosts
+      ping:
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install required packages
+      package:
+        name: "{{ packages }}"
+        state: present
+
+    - name: Copy test file
+      copy:
+        src: test.txt
+        dest: /tmp/test.txt
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create groups
+      group:
+        name: "{{ item.group }}"
+        state: present
+      loop: "{{ users }}"
+
+    - name: Create users with home directories
+      user:
+        name: "{{ item.name }}"
+        group: "{{ item.group }}"
+        home: "{{ item.home }}"
+        create_home: yes
+        shell: /bin/bash
+        state: present
+      loop: "{{ users }}"

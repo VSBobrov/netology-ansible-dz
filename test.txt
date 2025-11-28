@@ -1,0 +1,2 @@
+This is a test file for Netology MLOps homework.
+Created by Ansible playbook.
